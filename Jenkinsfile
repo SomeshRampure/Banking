@@ -1,11 +1,9 @@
-// Jenkinsfile - Basic Configuration
-
 pipeline {
     agent any
     
     environment {
-        PYTHON = '/usr/bin/python3'
-        VENV = "${WORKSPACE}/venv"
+        PYTHON = 'python'   // Windows Python command
+        VENV = "${WORKSPACE}\\venv"
         APP_URL = 'http://staging.bank.local'
     }
     
@@ -13,32 +11,28 @@ pipeline {
         stage('Checkout Code') {
             steps {
                 echo "===== CHECKOUT CODE FROM GIT ====="
-                checkout scm  // Automatically checks out from Git
-                sh 'git log --oneline -5'
-                sh 'git status'
+                checkout scm
+                bat 'git log --oneline -5'
+                bat 'git status'
             }
         }
         
         stage('Setup Environment') {
             steps {
                 echo "===== SETUP PYTHON ENVIRONMENT ====="
-                sh '''
-                    # Install Chrome
-                    apt-get update
-                    apt-get install -y google-chrome-stable
+                bat '''
+                    REM Create Python virtual environment
+                    %PYTHON% -m venv %VENV%
+                    call %VENV%\\Scripts\\activate
                     
-                    # Create Python virtual environment
-                    ${PYTHON} -m venv ${VENV}
-                    . ${VENV}/bin/activate
-                    
-                    # Install dependencies
+                    REM Upgrade pip and install dependencies
                     pip install --upgrade pip
                     pip install -r requirements.txt
                     
-                    # Create directories
-                    mkdir -p reports
+                    REM Create reports directory
+                    if not exist reports mkdir reports
                     
-                    echo "✓ Setup complete"
+                    echo Setup complete
                 '''
             }
         }
@@ -46,13 +40,13 @@ pipeline {
         stage('Run Tests') {
             steps {
                 echo "===== RUN PYTEST TESTS ====="
-                sh '''
-                    . ${VENV}/bin/activate
+                bat '''
+                    call %VENV%\\Scripts\\activate
                     
-                    pytest tests/ \
-                        --html=reports/report.html \
-                        --self-contained-html \
-                        --junitxml=reports/junit.xml \
+                    pytest tests/ ^
+                        --html=reports\\report.html ^
+                        --self-contained-html ^
+                        --junitxml=reports\\junit.xml ^
                         -v
                 '''
             }
