@@ -59,26 +59,23 @@ pipeline {
         }
     }
     
-   post {
-    always {
-        junit 'reports/junit.xml'
-        publishHTML([
-            allowMissing: false,
-            alwaysLinkToLastBuild: true,
-            keepAll: true,
-            reportDir: 'reports',
-            reportFiles: 'report.html',
-            reportName: 'Pytest Report'
-        ])
-    }
-}
-        
+    post {
+        always {
+            junit 'reports/junit.xml'
+            publishHTML([
+                allowMissing: false,
+                alwaysLinkToLastBuild: true,
+                keepAll: true,
+                reportDir: 'reports',
+                reportFiles: 'report.html',
+                reportName: 'Pytest Report'
+            ])
+        }
         success {
             echo "✓ Build Successful"
         }
-        
         failure {
             echo "✗ Build Failed"
         }
     }
-
+}
