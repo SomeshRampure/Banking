@@ -1,0 +1,1 @@
+echo "Pipeline trigger test: %DATE% %TIME%" >> README.md
