@@ -1,10 +1,7 @@
 import pytest
-import os
-import subprocess
 import logging
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service as ChromeService
-from webdriver_manager.chrome import ChromeDriverManager
 from src.utilities.config import BROWSER, IMPLICIT_WAIT
 
 # Setup logging
@@ -20,24 +17,21 @@ def driver():
     Scope: 'function' means new driver for each test
     """
     logging.info("Creating WebDriver")
-    
-    # Setup: Create Chrome driver
+
     options = webdriver.ChromeOptions()
     options.add_argument("--start-maximized")
-    options.add_argument("--disable-notifications")
-    
-    driver = webdriver.Chrome(
-        service=ChromeService(ChromeDriverManager().install()),
-        options=options
-    )
-    
+
+    # Explicitly point to your downloaded chromedriver
+    service = ChromeService("C:\\Driver\\chromedriver-win64\\chromedriver.exe")
+    driver = webdriver.Chrome(service=service, options=options)
+
     # Set implicit wait
     driver.implicitly_wait(IMPLICIT_WAIT)
-    
+
     logging.info("WebDriver created successfully")
-    
-    yield driver  # Return driver to test
-    
-    # Teardown: Close driver after test
+
+    yield driver  # Provide driver to test
+
+    # Teardown
     logging.info("Closing WebDriver")
     driver.quit()
