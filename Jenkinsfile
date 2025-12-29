@@ -59,21 +59,19 @@ pipeline {
         }
     }
     
-    post {
-        always {
-            echo "===== PUBLISH RESULTS ====="
-            
-            junit 'reports/junit.xml'
-            
-            publishHTML([
-                reportDir: 'reports',
-                reportFiles: 'report.html',
-                reportName: 'Pytest Report',
-                keepAll: true
-            ])
-            
-            archiveArtifacts artifacts: 'reports/**', allowEmptyArchive: true
-        }
+   post {
+    always {
+        junit 'reports/junit.xml'
+        publishHTML([
+            allowMissing: false,
+            alwaysLinkToLastBuild: true,
+            keepAll: true,
+            reportDir: 'reports',
+            reportFiles: 'report.html',
+            reportName: 'Pytest Report'
+        ])
+    }
+}
         
         success {
             echo "✓ Build Successful"
